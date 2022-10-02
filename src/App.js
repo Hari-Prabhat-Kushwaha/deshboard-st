@@ -19,20 +19,10 @@ function App() {
   const itemsPerPage = 6;
   const [Students, setStudents] = useState([]);
   const StudentsCollectionRef = collection(db, "students");
-  // const [query, setQuery] = userState("");
+  const [query, setQuery] = useState("");
+  const [showResult, setShowResult] = useState([]);
 
-  useEffect(() => {
-    const endOffset = itemOffset + itemsPerPage;
-
-    setCurrentItems(Students.slice(itemOffset, endOffset));
-    setPageCount(Math.ceil(Students.length / itemsPerPage));
-  }, [itemOffset, itemsPerPage, Students]);
-
-  const handlePageClick = (event) => {
-    const newOffset = (event.selected * itemsPerPage) % Students.length;
-
-    setItemOffset(newOffset);
-  };
+  
 
   const createStudents = () => {
     database.forEach(async (d) => {
@@ -44,6 +34,7 @@ function App() {
       });
     });
   };
+
 
   const updateStudent = async (id, is_paid) => {
     const userDoc = doc(db, "students", id);
@@ -60,25 +51,60 @@ function App() {
     getStudents();
   }, []);
 
+ const keys=["first_name", "email_id"]
+
+  useEffect(()=>{
+    const Result= Students.filter((item)=> 
+    keys.some(key=>item[key].toLowerCase().includes(query.toLowerCase()))
+    );
+    setShowResult(Result);
+  },[query, Students]);
+
+  useEffect(() => {
+    const endOffset = itemOffset + itemsPerPage;
+
+    setCurrentItems(showResult.slice(itemOffset, endOffset));
+    setPageCount(Math.ceil(Students.length / itemsPerPage));
+  }, [itemOffset, itemsPerPage, Students,showResult]);
+
+  const handlePageClick = (event) => {
+    const newOffset = (event.selected * itemsPerPage) % Students.length;
+
+    setItemOffset(newOffset);
+  };
+
+
   return (
     <div className="App">
-      <div>
-        {/* <input
+      
+        <input
           type="text"
           placeholder="Search..."
           className="search"
           onChange={(e) => setQuery(e.target.value)}
-        /> */}
+        />
+
+    
 
         <button onClick={createStudents}>Create student</button>
-        {currentItems.map((student) => {
-          return (
-            <div key={student.id}>
-              <h1>FirstName:{student.first_name}</h1>
-              <h1>LastName:{student.last_name}</h1>
-              <h1>email:{student.email_id}</h1>
-              <h1>is_paid:{student.is_paid ? "Yes" : "No"}</h1>
-              <h1>
+        <table className="table">
+          <tbody>
+            <tr>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Email</th>
+              <th>Amount</th>
+              <th>Action</th>
+            </tr>
+            
+            {currentItems.map((student) => (
+          
+            <tr key={student.id}>
+              <td>{student.first_name}</td>
+              <td>{student.last_name}</td>
+              <td>{student.email_id}</td>
+              <td>{student.is_paid ? "Yes" : "No"}</td>
+              <td>
                 {student.is_paid ? (
                   ""
                 ) : (
@@ -90,11 +116,13 @@ function App() {
                     Mark as Paid
                   </button>
                 )}
-              </h1>
-            </div>
-          );
-        })}
-      </div>
+              </td>
+            </tr>
+          
+        ))}
+          </tbody>
+        </table>
+      
 
       <ReactPaginate
         breakLabel="..."
