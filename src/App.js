@@ -9,7 +9,6 @@ import {
   updateDoc,
   doc,
 } from "firebase/firestore";
-// import Paginate from "./components/paginate";
 import ReactPaginate from "react-paginate";
 
 function App() {
@@ -76,22 +75,21 @@ function App() {
 
   return (
     <div className="App">
-      
+       <h1 className="head">Students Dashboard</h1>
         <input
           type="text"
           placeholder="Search..."
-          className="search"
+          className="search wrapper"
           onChange={(e) => setQuery(e.target.value)}
         />
 
-    
+{/*     
 
-        <button onClick={createStudents}>Create student</button>
+        <button onClick={createStudents}>Create student</button> */}
         <table className="table">
           <tbody>
             <tr>
-              <th>First Name</th>
-              <th>Last Name</th>
+              <th>Name</th>
               <th>Email</th>
               <th>Amount</th>
               <th>Action</th>
@@ -100,8 +98,7 @@ function App() {
             {currentItems.map((student) => (
           
             <tr key={student.id}>
-              <td>{student.first_name}</td>
-              <td>{student.last_name}</td>
+              <td>{student.first_name + " " +student.last_name}</td>
               <td>{student.email_id}</td>
               <td>{student.is_paid ? "Yes" : "No"}</td>
               <td>
@@ -126,11 +123,11 @@ function App() {
 
       <ReactPaginate
         breakLabel="..."
-        nextLabel="next >"
+        nextLabel=" >>"
         onPageChange={handlePageClick}
         pageRangeDisplayed={3}
         pageCount={pageCount}
-        previousLabel="< previous"
+        previousLabel="<< "
         renderOnZeroPageCount={null}
         containerClassName="pagination"
         pageLinkClassName="page-num"
